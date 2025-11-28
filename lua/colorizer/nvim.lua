@@ -75,7 +75,7 @@ return setmetatable({
 			if k == 'line' then
 				f = function()
 					local pos = vim.api.nvim_win_get_cursor(0)
-					return vim.api.nvim_buf_get_lines(0, pos[1]-1, pos[1], 'line')[1]
+					return vim.api.nvim_buf_get_lines(0, pos[1]-1, pos[1], true)[1]
 				end
 			elseif k == 'nr' then
 				f = vim.api.nvim_get_current_buf
@@ -93,7 +93,7 @@ return setmetatable({
 			end
 			local command = k:gsub("_$", "!")
 			local f = function(...)
-				return vim.api.nvim_command(table.concat(vim.tbl_flatten {command, ...}, " "))
+				return vim.api.nvim_command(table.concat(vim.iter({command, ...}):flatten():totable(), " "))
 			end
 			mt[k] = f
 			return f
