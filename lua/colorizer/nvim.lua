@@ -3,23 +3,12 @@
 
 -- Equivalent to `echo vim.inspect(...)`
 local function nvim_print(...)
-	if select("#", ...) == 1 then
-		vim.api.nvim_out_write(vim.inspect((...)))
-	else
-		vim.api.nvim_out_write(vim.inspect {...})
-	end
-	vim.api.nvim_out_write("\n")
+	vim.print((...))
 end
 
 --- Equivalent to `echo` EX command
 local function nvim_echo(...)
-	for i = 1, select("#", ...) do
-		local part = select(i, ...)
-		vim.api.nvim_out_write(tostring(part))
-		-- vim.api.nvim_out_write("\n")
-		vim.api.nvim_out_write(" ")
-	end
-	vim.api.nvim_out_write("\n")
+	vim.api.nvim_echo({(...)}, true, {})
 end
 
 local window_options = {
@@ -145,28 +134,28 @@ return setmetatable({
 	});
 	o = setmetatable({}, {
 		__index = function(_, k)
-			return vim.api.nvim_get_option(k)
+			return vim.api.nvim_get_option_value(k, {})
 		end;
 		__newindex = function(_, k, v)
-			return vim.api.nvim_set_option(k, v)
+			return vim.api.nvim_set_option_value(k, v, {})
 		end
 	});
 	-- TODO add warning if you try to use a window option here?
 	bo = setmetatable({}, {
 		__index = function(_, k)
-			return vim.api.nvim_buf_get_option(0, k)
+			return vim.api.nvim_get_option_value(k, {buf = 0})
 		end;
 		__newindex = function(_, k, v)
-			return vim.api.nvim_buf_set_option(0, k, v)
+			return vim.api.nvim_set_option_value(k, v, {buf = 0})
 		end
 	});
 	wo = setmetatable({}, {
 		__index = function(_, k)
-			return vim.api.nvim_win_get_option(0, k)
+			return vim.api.nvim_get_option_value(k, {win = 0})
 		end;
 		__newindex = function(_, k, v)
 			-- passing v == nil will clear the value, just like above.
-			return vim.api.nvim_win_set_option(0, k, v)
+			return vim.api.nvim_set_option_value(k, v, {win = 0})
 		end
 	});
 	env = setmetatable({}, {
